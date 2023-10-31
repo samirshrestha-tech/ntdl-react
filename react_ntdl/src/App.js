@@ -1,12 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
+import { deleteTTask, postData, updateTask } from "./helper/axiosHelper";
+import { getTasks } from "./helper/axiosHelper";
 
 const totalHrsPerWeek = 24 * 7;
 
 function App() {
-  const [form, setForm] = useState({});
+  const initialState = {
+    task: "",
+    hr: "",
+  };
+  const [form, setForm] = useState(initialState);
   const [taskList, setTaskList] = useState([]);
+  const [resp, setResp] = useState({});
   const totalHrs = taskList.reduce((acc, item) => acc + +item.hr, 0);
+
+  useEffect(() => {
+    getdata();
+  }, []);
+
+  const getdata = async () => {
+    const data = await getTasks();
+    console.log(data);
+    data.status === "success" && setTaskList(data.taskList);
+  };
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setForm({
@@ -14,51 +32,65 @@ function App() {
       [name]: value,
     });
   };
-  const handleOnSubmit = (e) => {
+  const handleOnSubmit = async (e) => {
     e.preventDefault();
     if (totalHrs + +form.hr > totalHrsPerWeek) {
       return alert("Sorry Boss not enough hours");
     }
-    const obj = {
-      ...form,
-      type: "entry",
-      id: randomStr(),
-    };
-    setTaskList([...taskList, obj]);
+    // const obj = {
+    //   ...form,
+    //   type: "entry",
+    //   id: randomStr(),
+    // };
+    // setTaskList([...taskList, obj]);
+
+    // instead of displraying with the use state we send the data to the db first and receive it again to display again
+    const data = await postData(form);
+
+    setResp(data);
+    setForm(initialState);
+    getdata();
   };
   // console.log(taskList);
 
-  const handleOnDelete = (id, task) => {
-    if (window.confirm(`are you sure you want to delete ${task})`)) {
-      const filteredArr = taskList.filter((item) => item.id !== id);
-      setTaskList(filteredArr);
+  const handleOnDelete = async (id, task) => {
+    if (window.confirm(`are you sure you want to delete ${task}`)) {
+      //  calling api to delete the data
+      const resp = await deleteTTask({ ids: [id] });
+      // fetching the api to pull the data
+      getdata();
+      // filter
     }
-    // filter
   };
 
-  const randomStr = () => {
-    const charLength = 6;
-    const str = "qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM";
-    let id = "";
+  // const randomStr = () => {
+  //   const charLength = 6;
+  //   const str = "qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM";
+  //   let id = "";
 
-    for (let i = 0; i < charLength; i++) {
-      const randNum = Math.round(Math.random() * (str.length - 1));
-      id += str[randNum];
-    }
+  //   for (let i = 0; i < charLength; i++) {
+  //     const randNum = Math.round(Math.random() * (str.length - 1));
+  //     id += str[randNum];
+  //   }
 
-    return id;
-  };
-  const switchTask = (id, type) => {
-    const arg = taskList.map((item) => {
-      if (item.id === id) {
-        return {
-          ...item,
-          type,
-        };
-      }
-      return item;
-    });
-    setTaskList(arg);
+  //   return id;
+  // };
+  const switchTask = async (obj) => {
+    const response = await updateTask(obj);
+    console.log("fafa");
+    console.log(response);
+
+    getdata();
+    // const arg = taskList.map((item) => {
+    //   if (item.id === _id) {
+    //     return {
+    //       ...item,
+    //       type,
+    //     };
+    //   }
+    //   return item;
+    // });
+    // setTaskList(arg);
   };
 
   const entry = taskList.filter((item) => item.type === "entry");
@@ -75,6 +107,10 @@ function App() {
               <h1>Not to do list</h1>
             </div>
           </div>
+
+          {resp?.message && (
+            <div className="alert-success">{resp?.message}</div>
+          )}
 
           {/* <!-- form  --> */}
           <form
@@ -128,13 +164,15 @@ function App() {
                       <td>{item.hr}hr</td>
                       <td class="text-end">
                         <button
-                          onClick={() => handleOnDelete(item.id)}
+                          onClick={() => handleOnDelete(item._id)}
                           class="btn btn-danger"
                         >
                           <i class="fa-solid fa-trash"></i>
                         </button>
                         <button
-                          onClick={() => switchTask(item.id, "bad")}
+                          onClick={() =>
+                            switchTask({ _id: item._id, type: "bad" })
+                          }
                           class="btn btn-success"
                         >
                           <i class="fa-solid fa-arrow-right"></i>
@@ -159,13 +197,15 @@ function App() {
                       <td>{item.hr}hr</td>
                       <td class="text-end">
                         <button
-                          onClick={() => switchTask(item.id, "entry")}
+                          onClick={() =>
+                            switchTask({ _id: item._id, type: "entry" })
+                          }
                           class="btn btn-left"
                         >
                           <i class="fa-solid fa-arrow-left"></i>
                         </button>
                         <button
-                          onClick={() => handleOnDelete(item.id)}
+                          onClick={() => handleOnDelete(item._id)}
                           class="btn btn-warning"
                         >
                           <i class="fa-solid fa-trash"></i>

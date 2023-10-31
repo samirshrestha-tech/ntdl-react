@@ -1,0 +1,27 @@
+GET http://localhost:8000/api/v1/task
+
+
+
+### POST request
+POST http://localhost:8000/api/v1/post
+Content-Type: application/json
+
+{
+    "task": "ad",
+    "hr": 2324
+}
+### patch 
+PATCH http://localhost:8000/api/v1/patch
+Content-Type: application/json
+
+{
+  "_id": "653f1dcd7758df6b6bf0b5d5",
+  "type": "bad"
+}
+
+### delete
+DELETE http://localhost:8000/api/v1/delete
+
+
+
+
