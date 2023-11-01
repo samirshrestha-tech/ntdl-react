@@ -160,15 +160,21 @@ function App() {
                   {entry.map((item, i) => (
                     <tr>
                       <td>{i + 1}</td>
+                      <td>
+                        {" "}
+                        <div className="form-check">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value=""
+                            id="flexCheckChecked"
+                          ></input>
+                        </div>
+                      </td>
+
                       <td>{item.task}</td>
                       <td>{item.hr}hr</td>
                       <td class="text-end">
-                        <button
-                          onClick={() => handleOnDelete(item._id)}
-                          class="btn btn-danger"
-                        >
-                          <i class="fa-solid fa-trash"></i>
-                        </button>
                         <button
                           onClick={() =>
                             switchTask({ _id: item._id, type: "bad" })
@@ -193,6 +199,17 @@ function App() {
                   {bad.map((item, i) => (
                     <tr>
                       <td>{i + 1}</td>
+                      <td>
+                        {" "}
+                        <div className="form-check">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value=""
+                            id="flexCheckChecked"
+                          ></input>
+                        </div>
+                      </td>
                       <td>{item.task}</td>
                       <td>{item.hr}hr</td>
                       <td class="text-end">
@@ -203,12 +220,6 @@ function App() {
                           class="btn btn-left"
                         >
                           <i class="fa-solid fa-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={() => handleOnDelete(item._id)}
-                          class="btn btn-warning"
-                        >
-                          <i class="fa-solid fa-trash"></i>
                         </button>
                       </td>
                     </tr>
@@ -225,6 +236,11 @@ function App() {
           <div class="alert alert-info">
             Total hrs per week allocated = <span id="totalHr">{totalHrs}</span>
             hr
+          </div>
+          <div className="delete d-grid mb-3">
+            <button onClick={() => handleOnDelete()} class="btn btn-danger">
+              <i class="fa-solid fa-trash"></i>
+            </button>
           </div>
         </div>
       </div>
