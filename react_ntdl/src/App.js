@@ -239,7 +239,7 @@ function App() {
           </div>
           <div className="delete d-grid mb-3">
             <button onClick={() => handleOnDelete()} class="btn btn-danger">
-              <i class="fa-solid fa-trash"></i>
+              <i class="fa-solid fa-trash"></i> Delete 3 tasks?
             </button>
           </div>
         </div>
