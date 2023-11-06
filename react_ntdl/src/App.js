@@ -13,6 +13,7 @@ function App() {
   const [form, setForm] = useState(initialState);
   const [taskList, setTaskList] = useState([]);
   const [resp, setResp] = useState({});
+  const [idsToDelete, setIdsToDelete] = useState([]);
   const totalHrs = taskList.reduce((acc, item) => acc + +item.hr, 0);
 
   useEffect(() => {
@@ -22,7 +23,7 @@ function App() {
   const getdata = async () => {
     const data = await getTasks();
     console.log(data);
-    data.status === "success" && setTaskList(data.taskList);
+    data?.status === "success" && setTaskList(data.taskList);
   };
 
   const handleOnChange = (e) => {
@@ -56,7 +57,7 @@ function App() {
   const handleOnDelete = async (id, task) => {
     if (window.confirm(`are you sure you want to delete ${task}`)) {
       //  calling api to delete the data
-      const resp = await deleteTTask({ ids: [id] });
+      const resp = await deleteTTask({ ids: idsToDelete });
       // fetching the api to pull the data
       getdata();
       // filter
@@ -96,6 +97,8 @@ function App() {
   const entry = taskList.filter((item) => item.type === "entry");
   const bad = taskList.filter((item) => item.type === "bad");
   const badHr = bad.reduce((acc, item) => acc + +item.hr, 0);
+
+  const handleOnAllChecked = (e) => {};
 
   return (
     <div className="">
@@ -152,9 +155,17 @@ function App() {
           {/* <!-- table area  --> */}
           <div class="row mt-5 pt-2">
             {/* <!-- 1. entry list --> */}
+
             <div class="col-md">
               <h3 class="text-center">Task Entry List</h3>
               <hr />
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value="entry"
+                id=""
+              ></input>
+              <label htmlFor=""> Select all entry list</label>
               <table class="table table-striped table-hover border opacity">
                 <tbody id="entry">
                   {entry.map((item, i) => (
@@ -194,6 +205,13 @@ function App() {
             <div class="col-md">
               <h3 class="text-center">Bad List</h3>
               <hr />
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value="bad"
+                id=""
+              ></input>
+              <label htmlFor=""> Select all bad list</label>
               <table class="table table-striped table-hover border opacity">
                 <tbody id="bad">
                   {bad.map((item, i) => (
